@@ -121,7 +121,7 @@ func void Push(Walker *walker, DirEntry *dent)
 	Dirp list;
 	list.depth = walker->depth;
 	list.dirp = dirp;
-	memcpy(&list.path, &dent->path, sizeof(PathBuffer));
+	PathBuffer_Copy(&list.path, &dent->path);
 	PushTop(&walker->stack, &list);
 }
 
@@ -143,8 +143,7 @@ func bool WalkerNext(Walker *walker, DirEntry *result)
 	if (walker->start != NULL) {
 		memcpy(&path, walker->start, sizeof(path));
 
-		DirEntry dent =
-		        DirEntry_FromPath(0, (char*)PathBuffer_ToCString(walker->start));
+		DirEntry dent = DirEntry_FromPath(0, (char*)PathBuffer_ToCString(walker->start));
 		walker->start = NULL;
 		if (!HandleEntry(walker, &dent)) {
 			abort();
@@ -174,7 +173,7 @@ func bool WalkerNext(Walker *walker, DirEntry *result)
 
 			DirEntry dent = DirEntry_FromDirent(last->depth + 1, next);
 			PathBuffer_Push(&path, PathBuffer_ToString(&dent.path));
-			memcpy(&dent.path, &path, sizeof(path));
+			PathBuffer_Copy(&dent.path, &path);
 
 			// HandleEntry(walker, &dent);
 			if (IsDirectory(&dent)) {
