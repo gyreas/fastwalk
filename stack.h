@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "include/path.h"
 #include "util.h"
 
 typedef struct Dirp {
