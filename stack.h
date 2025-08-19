@@ -34,7 +34,7 @@ func void PushTop(DirStack *s, Dirp *list)
 		return;
 	}
 
-	if (s->top + 1 >= s->capacity) {
+	if (s->top + 1 > s->capacity) {
 		if (s->capacity == 0) {
 			s->capacity = 64;
 		} else {
