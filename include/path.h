@@ -125,13 +125,14 @@ typedef struct pathbuffer {
 #define PathBufS(pathbuf) (int)(pathbuf)->end, (pathbuf)->buf
 #define PathBuffer_ToCString(pb) ((pb)->buf[(pb)->end] = 0, (pb)->buf)
 
-INLINE void PathBuffer_Copy(PathBuffer* buf, PathBuffer* other)
+INLINE void PathBuffer_Copy(PathBuffer* into, PathBuffer* from)
 {
-	if (!buf || !other || buf->end == 0) {
+	assert(from->end > 0);
+	if (!into || !from) {
 		return;
 	}
-	memcpy((void*)other->buf, (void*)buf->buf, buf->end);
-	other->end = buf->end;
+	memcpy((void*)into->buf, (void*)from->buf, from->end);
+	into->end = from->end;
 }
 
 INLINE bool PathBuffer_IsRoot(PathBuffer* buf)
@@ -258,6 +259,21 @@ bool PathBuffer_Parent(PathBuffer* buf, String* parent)
 
 	return true;
 
+}
+
+String PathBuffer_Basename(PathBuffer* buf)
+{
+	Slice path = {.data = buf->buf, .len = buf->end};
+	if (path.len == 0) return String_FromC(".");
+
+	path = Bytes_Rtrim(path, SEP);
+	if (path.len == 0) return SEPSTR;
+
+	int rindex = Bytes_RindexOf(path, SEP);
+	assert(rindex > -2);
+	if (rindex > -1) path = Sliced(path, (uZ)rindex + 1, RANGE_END);
+
+	return String_FromSlice(path);
 }
 
 String PathBuffer_Dirname(PathBuffer* buf)
