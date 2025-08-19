@@ -21,12 +21,13 @@ typedef struct DirStack {
 	size_t capacity;
 } DirStack;
 
-INLINE func
-bool IsEmpty(DirStack *s)
+INLINE
+func bool IsEmpty(DirStack *s)
 {
 	return s->top == 0;
 }
 
+INLINE
 func void PushTop(DirStack *s, Dirp *list)
 {
 	if (!s || !list) {
@@ -46,9 +47,8 @@ func void PushTop(DirStack *s, Dirp *list)
 			abort();
 		}
 	}
-
-	memcpy(s->elems + s->top, list, sizeof(Dirp));
-	s->top += 1;
+	s->elems[s->top++] = *list;
+	// PathBuffer_Copy(&top->path, &list->path);
 }
 
 INLINE
@@ -60,7 +60,9 @@ func Dirp* PopTop(DirStack *s)
 INLINE
 func Dirp* Last(DirStack *s)
 {
-	return s->top == 0 ? NULL : &s->elems[s->top - 1];
+	Dirp* last = s->top == 0 ? NULL : &s->elems[s->top - 1];
+	assert(last->path.end > 0);
+	return last;
 }
 
 INLINE
