@@ -73,15 +73,32 @@ func bool IsDirectory(DirEntry *de)
 	return de->type == T_DIRECTORY;
 }
 
+func const char* DirEntryTypeAsString(DirEntry* de)
+{
+	switch (de->type) {
+	case T_DIRECTORY:
+		return "directory";
+	case T_FILE:
+		return "file";
+	case T_SYMLINK:
+		return "symlink";
+	case T_UNKNOWN:
+		return "unknown";
+	default:
+		abort();
+	}
+}
+
 func void DirEntryPrint(DirEntry *de)
 {
-	printf("entry:'%.*s'\n", PathBufS(&de->path));
+	printf("%s('%.*s')\n", DirEntryTypeAsString(de), PathBufS(&de->path));
 }
 
 typedef struct WalkOptions {
 	bool followLinks;
 } WalkOptions;
 
+// It's doing DFS
 typedef struct Walker {
 	WalkOptions opts;
 	PathBuffer root;
@@ -103,7 +120,7 @@ func void Pop(Walker *walker)
 {
 	Dirp *popped = PopTop(&walker->stack);
 	if (!popped) {
-		puts("empty stack");
+		errorfln("empty stack");
 		abort();
 	};
 	closedir(popped->dirp);
@@ -155,7 +172,7 @@ func bool WalkerNext(Walker *walker, DirEntry *result)
 	while (!IsEmpty(&walker->stack)) {
 		walker->depth = Length(&walker->stack);
 		if (walker->depth > 64) {
-			puts("max depth exceeded");
+			errorfln("max depth exceeded");
 			abort();
 		}
 
@@ -163,7 +180,7 @@ func bool WalkerNext(Walker *walker, DirEntry *result)
 		errno = 0;
 		struct dirent *next = readdir(last->dirp);
 		if (!next && errno) {
-			printf("error: '%.*s': %s\n", PathBufS(&last->path), strerror(errno));
+			errorfln("error: '%.*s': %s\n", PathBufS(&last->path), strerror(errno));
 			abort();
 		}
 		if (next) {

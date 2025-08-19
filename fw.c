@@ -1,31 +1,38 @@
 #include <errno.h>
+#include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "walker.h"
 
+static const char indent[] =
+        "                                                                                "
+        "                                                                                "
+        "                                                                                "
+        "                                                                                ";
+
+#define Indent(i) (indent + ((sizeof(indent) - 1)-(i)*4))
+
 int main(int argc, char** argv)
 {
 	if (argc != 2) {
-		fprintf(stderr, "error: arguments\n");
+		errorfln("error: arguments\n");
 		exit(1);
 	}
 
-	const char* root = argv[1];
-	Walker w = {0};
-	const char* start = realpath(root, NULL);
+	const char* start = argv[1];
 	if (!start) {
-		fprintf(stderr, "error: '%s': %s\n", root, strerror(errno));
+		errorfln("error: '%s': %s\n", argv[1], strerror(errno));
 		exit(1);
 	}
-	WalkerInit(&w, start);
 
+	Walker w = {0};
 	DirEntry entry = {0};
-	while (WalkerNext(&w, &entry)) {
-		DirEntryPrint(&entry);
-	}
 
-	printf("w.dir = '%.*s'\n", PathBufS(&w.root));
+	WalkerInit(&w, start);
+	while (WalkerNext(&w, &entry)) {
+		printf("%s%.*s\n", Indent(entry.depth), PathBufS(&entry.path));
+	}
 
 	return 0;
 }
