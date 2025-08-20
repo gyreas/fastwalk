@@ -175,7 +175,8 @@ func bool WalkerNext(Walker *walker, DirEntry *result)
 		walker->depth = Length(&walker->stack);
 		if (walker->depth > 64) {
 			errorfln("max depth exceeded");
-			abort();
+			Pop(walker);
+			continue;
 		}
 
 		Dirp *last = Last(&walker->stack);
