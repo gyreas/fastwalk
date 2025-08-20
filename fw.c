@@ -11,7 +11,8 @@ static const char indent[] =
         "                                                                                "
         "                                                                                ";
 
-#define Indent(i) (indent + ((sizeof(indent) - 1)-(i)*4))
+#define INDENT_WIDTH 2
+#define Indent(i) (indent + ((sizeof(indent) - 1)-(i)*INDENT_WIDTH))
 
 int main(int argc, char** argv)
 {
