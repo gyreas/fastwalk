@@ -193,6 +193,7 @@ func bool WalkerNext(Walker *walker, DirEntry *result)
 			}
 
 			DirEntry dent = DirEntry_FromDirent(last->depth + 1, next);
+			PathBuffer_Copy(&path, &last->path);
 			PathBuffer_Push(&path, PathBuffer_ToString(&dent.path));
 			PathBuffer_Copy(&dent.path, &path);
 
