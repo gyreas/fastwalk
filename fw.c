@@ -33,6 +33,7 @@ int main(int argc, char** argv)
 	while (WalkerNext(&w, &entry)) {
 		printf("%s%.*s\n", Indent(entry.depth), PathBufS(&entry.path));
 	}
+	assert(IsEmpty(&w.stack));
 
 	return 0;
 }
