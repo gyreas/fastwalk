@@ -165,6 +165,8 @@ func bool WalkerNext(Walker *walker, DirEntry *result)
 		if (!HandleEntry(walker, &dent)) {
 			abort();
 		};
+		*result = dent;
+		return true;
 	}
 
 	assert(path.end > 0 && "path is not set");
