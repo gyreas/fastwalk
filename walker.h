@@ -129,9 +129,10 @@ func void Pop(Walker *walker)
 static INLINE
 func void Push(Walker *walker, DirEntry *dent)
 {
-	DIR *dirp = opendir((char*)PathBuffer_ToCString(&dent->path));
+	const char* dpath = (char*)PathBuffer_ToCString(&dent->path);
+	DIR *dirp = opendir(dpath);
 	if (!dirp) {
-		errorfln("opendir: '%.*s': %s", PathBufS(&dent->path), strerror(errno));
+		errorfln("opendir: '%s': %s", dpath, strerror(errno));
 		abort();
 	}
 
